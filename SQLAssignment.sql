@@ -39,5 +39,15 @@ SELECT * FROM WideWorldImporters.Sales.InvoiceLines A WHERE LEN(A.Description) >
 
 /*Q6*/
  
-SELECT * FROM WideWorldImporters.Application.People;
-SELECT * FROM WideWorldImporters.Sales.Orders WHERE OrderDate like '2014%';
+SELECT * FROM WideWorldImporters.Warehouse.StockItems 
+WHERE StockItemID IN ( 
+	SELECT DISTINCT StockItemID FROM WideWorldImporters.Sales.OrderLines 
+	WHERE OrderID IN ( SELECT OrderID FROM WideWorldImporters.Sales.Orders
+		WHERE OrderDate like '2014%' AND CustomerID NOT IN ( 
+			SELECT CustomerID FROM WideWorldImporters.Sales.Customers 
+			WHERE PostalCityID IN (	
+				SELECT CityID FROM WideWorldImporters.Application.Cities
+				WHERE StateProvinceID IN (1,11) )
+		)
+	)
+);
