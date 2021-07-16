@@ -71,6 +71,8 @@ values
 ,('Barack Obama','1/20/2009',Null)
 ,('Donald Trump','1/20/2017',Null);
 
+----------------Solution---------
+
 SELECT * FROM #President Order By StartDate;
 
 --------------------------------
