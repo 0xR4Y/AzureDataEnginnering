@@ -83,7 +83,7 @@ SELECT
 	ISNULL(P2.DiedDate,'2021-07-16') AS EndDate,
 	P1.Name,P1.StartDate,
 	ISNULL(P1.DiedDate,'2021-07-16') AS EndDate
-from  #President P1
+from  #President as P1
     cross join #President as P2
 where
 	P1.StartDate <= ISNULL(P2.DiedDate,'2021-07-16')
