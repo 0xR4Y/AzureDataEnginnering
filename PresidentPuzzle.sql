@@ -65,40 +65,42 @@ values
 ,('Ronald Reagan','1/20/1981','6/5/2004')
 ,('Gerald Ford','7/9/1974','12/26/2006')
 ,('Jimmy Carter','1/20/1977',Null)
-,('George H. W. Bush','1/20/1989',Null)
+,('George H. W. Bush','1/20/1989','11/30/2018')
 ,('Bill Clinton','1/20/1993',Null)
 ,('George W. Bush','1/20/2001',Null)
 ,('Barack Obama','1/20/2009',Null)
 ,('Donald Trump','1/20/2017',Null);
 
-----------------Solution---------
+----------------Solution--------------
 
-SELECT * FROM #President Order By StartDate;
+SELECT Name, StartDate,ISNULL(DiedDate,'2021-07-16')
+	  FROM #President Order By StartDate;
 
 --------------------------------
 
 SELECT
-    P2.Name, P2.StartDate,P2.DiedDate,P1.Name,P1.StartDate,P1.DiedDate
+    P2.Name, P2.StartDate,
+	ISNULL(P2.DiedDate,'2021-07-16') AS EndDate,
+	P1.Name,P1.StartDate,
+	ISNULL(P1.DiedDate,'2021-07-16') AS EndDate
 from  #President P1
     cross join #President as P2
 where
-	P1.StartDate <= P2.DiedDate
-	AND P1.StartDate >= P2.StartDate
-	AND P1.DiedDate >= P2.DiedDate
+	P1.StartDate <= ISNULL(P2.DiedDate,'2021-07-16')
+	AND ISNULL(P1.DiedDate,'2021-07-16') >= ISNULL(P2.DiedDate,'2021-07-16')
 	ORDER BY P2.StartDate ,P2.DiedDate;
-
 ---------------------------------
 
 SELECT
-    P2.Name, count(P1.Name) As PresidentAliveDurigPeriod,
-	P2.StartDate ,P2.DiedDate As EndDate, 
-	DATEDIFF(day,P2.StartDate,P2.DiedDate) As DaysAlive,
+    P2.Name,Count(P1.Name) As PresidentAliveDurigPeriod,
+	P2.StartDate ,
+	ISNULL(P2.DiedDate,'2021-07-16') AS EndDate, 
+	DATEDIFF(day,P2.StartDate,ISNULL(P2.DiedDate,'2021-07-16')) As DaysAlive,
 	string_agg(P1.Name, ', ') As PresidentList
 from  #President P1
     cross join #President as P2
 where
-		P1.StartDate <= P2.DiedDate
-	AND P1.StartDate <= P2.DiedDate
-	AND P1.DiedDate >= P2.DiedDate
+		P1.StartDate <= ISNULL(P2.DiedDate,'2021-07-16')
+	AND ISNULL(P1.DiedDate,'2021-07-16') >= ISNULL(P2.DiedDate,'2021-07-16')
 	GROUP BY P2.Name,P2.StartDate ,P2.DiedDate
-	ORDER BY P2.StartDate ,P2.DiedDate;	
+	ORDER BY P2.StartDate ,P2.DiedDate;
