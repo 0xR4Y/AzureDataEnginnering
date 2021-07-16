@@ -51,3 +51,52 @@ WHERE StockItemID IN (
 		)
 	)
 );
+
+/* Q7 */
+
+SELECT sp.StateProvinceName,
+AVG(datediff(day,o.OrderDate,i.ConfirmedDeliveryTime)) as AVGDeliveryTime
+FROM WideWorldImporters.Sales.Orders o
+INNER Join WideWorldImporters.Sales.Invoices i
+ON o.OrderID = i.OrderID
+INNER join WideWorldImporters.Sales.Customers cs
+ON o.CustomerID = cs.CustomerID
+INNER join WideWorldImporters.Application.Cities ct
+ON cs.PostalCityID = ct.CityID
+INNER join WideWorldImporters.Application.StateProvinces sp
+ON ct.StateProvinceID = sp.StateProvinceID
+GROUP BY sp.StateProvinceName
+Order by sp.StateProvinceName;
+
+/*Q8*/
+/*------------------*/
+/* Q9 */
+
+SELECT * FROM WideWorldImporters.Warehouse.StockItems 
+WHERE StockItemID IN (
+SELECT pol.StockItemID
+FROM WideWorldImporters.Purchasing.PurchaseOrderLines pol
+INNER JOIN WideWorldImporters.Purchasing.PurchaseOrders po
+ON po.PurchaseOrderID = pol.PurchaseOrderID
+INNER JOIN WideWorldImporters.Sales.OrderLines ol
+ON pol.StockItemID = ol.StockItemID
+INNER JOIN WideWorldImporters.Sales.Orders o
+ON ol.OrderID = o.OrderID
+WHERE po.OrderDate like '2015%' AND o.OrderDate like '2015%'
+GROUP BY pol.StockItemID
+HAVING sum(pol.ReceivedOuters) > sum(ol.Quantity)
+) ORDER BY StockItemID;
+
+SELECT pol.StockItemID,
+sum(pol.ReceivedOuters) AS sumBuy, sum(ol.Quantity) AS sumSold
+FROM WideWorldImporters.Purchasing.PurchaseOrderLines pol
+INNER JOIN WideWorldImporters.Purchasing.PurchaseOrders po
+ON po.PurchaseOrderID = pol.PurchaseOrderID
+INNER JOIN WideWorldImporters.Sales.OrderLines ol
+ON pol.StockItemID = ol.StockItemID
+INNER JOIN WideWorldImporters.Sales.Orders o
+ON ol.OrderID = o.OrderID
+WHERE po.OrderDate like '2015%' AND o.OrderDate like '2015%'
+GROUP BY pol.StockItemID
+HAVING sum(pol.ReceivedOuters) > sum(ol.Quantity);
+
