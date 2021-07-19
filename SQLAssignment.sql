@@ -107,7 +107,8 @@ INNER JOIN WideWorldImporters.Sales.Orders o
 ON ol.OrderID = o.OrderID
 WHERE ol.Description like '%mug%';
 
-/* Q11 */Not Completed
+/* Q11 */
+--Not Completed
 
 SELECT * FROM WideWorldImporters.Application.Cities;
 
@@ -169,7 +170,8 @@ WHERE o.OrderDate like '2016%'
 GROUP BY s.StockItemID, s.StockItemName, ct.CityName
 ORDER By ct.CityName, TotalQuantity DESC;
 
-/* Q15 */Not Completed
+/* Q15 */
+--Not Completed
 
 SELECT * FROM WideWorldImporters.Sales.Invoices;
 
