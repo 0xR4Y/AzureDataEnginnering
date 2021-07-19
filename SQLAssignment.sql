@@ -193,10 +193,29 @@ WHERE o.OrderDate like '2015%'
 GROUP By JSON_VALUE(CustomFields, '$.CountryOfManufacture');
 
 /* Q18 */
+--Note: Order doest not work with View
 
-CREATE VIEW V_ABC AS
-SELECT DATEPART(year,o.OrderDate) as YearSold,
-sg.StockGroupID,sg.StockGroupName, 
+CREATE VIEW V_TotalStockGroupByYearOrderByName AS
+SELECT sg.StockGroupName, 
+DATEPART(year,o.OrderDate) as YearSold,
+SUM(ol.Quantity) as TotalQuantity
+FROM WideWorldImporters.Warehouse.StockGroups sg
+inner join WideWorldImporters.Warehouse.StockItemStockGroups sisg
+on sg.StockGroupID = sisg.StockGroupID
+inner join WideWorldImporters.Warehouse.StockItems si
+on si.StockItemID = sisg.StockItemID
+inner join WideWorldImporters.Sales.OrderLines ol
+on si.StockItemID = ol.StockItemID
+inner join WideWorldImporters.Sales.Orders o
+on ol.OrderID = o.OrderID
+WHERE DATEPART(year,o.OrderDate) IN (2013,2014,2015,2016,2017)
+GROUP By sg.StockGroupName,DATEPART(year,o.OrderDate);
+--ORDER BY sg.StockGroupName,DATEPART(year,o.OrderDate);
+
+/* Q19 */ 
+
+CREATE VIEW V_TotalStockGroupByYearOrderByYear AS
+SELECT DATEPART(year,o.OrderDate) as YearSold,sg.StockGroupName, 
 SUM(ol.Quantity) as TotalQuantity
 FROM WideWorldImporters.Warehouse.StockGroups sg
 join WideWorldImporters.Warehouse.StockItemStockGroups sisg
@@ -208,6 +227,7 @@ on si.StockItemID = ol.StockItemID
 join WideWorldImporters.Sales.Orders o
 on ol.OrderID = o.OrderID
 WHERE DATEPART(year,o.OrderDate) IN (2013,2014,2015,2016,2017)
-GROUP By DATEPART(year,o.OrderDate),sg.StockGroupID,sg.StockGroupName;
+GROUP By sg.StockGroupName,DATEPART(year,o.OrderDate)
+--ORDER BY DATEPART(year,o.OrderDate),sg.StockGroupName;
 
-/* Q19 */
+/* Q20 */
