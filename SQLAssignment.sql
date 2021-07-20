@@ -250,7 +250,7 @@ SELECT @TotalOrder = SUM(s.RecommendedRetailPrice* ol.Quantity) FROM
 return @TotalOrder
 end
 
---Attach Total Order at Invoice table
+--Attach Total Order to Invoices table
 SELECT *, dbo.GetTotalOrder(OrderID) as TotalOrder
 FROM WideWorldImporters.Sales.Invoices ;
 
