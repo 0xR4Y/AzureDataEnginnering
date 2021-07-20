@@ -233,3 +233,35 @@ GROUP By sg.StockGroupName,DATEPART(year,o.OrderDate)
 --ORDER BY DATEPART(year,o.OrderDate),sg.StockGroupName;
 
 /* Q20 */
+
+CREATE FUNCTION dbo.GetTotalOrder(@OrderID int)
+returns decimal(18,2)
+as 
+Begin
+declare @TotalOrder decimal(18,2)
+SELECT @TotalOrder = SUM(s.RecommendedRetailPrice* ol.Quantity) FROM 
+	WideWorldImporters.Sales.Orders o
+	INNER Join WideWorldImporters.Sales.OrderLines ol
+	ON o.OrderID = ol.OrderID
+	INNER join WideWorldImporters.Warehouse.StockItems s
+	ON ol.StockItemID=s.StockItemID
+	WHERE o.OrderID = @OrderID
+	GROUP BY o.OrderID
+return @TotalOrder
+end
+
+--Attach Total Order at Invoice table
+SELECT *, dbo.GetTotalOrder(OrderID) as TotalOrder
+FROM WideWorldImporters.Sales.Invoices ;
+
+--DROP FUNCTION GetTotalOrder;
+
+--SELECT o.OrderID,
+--SUM(s.RecommendedRetailPrice* ol.Quantity) As TotalOrder
+--FROM WideWorldImporters.Sales.Orders o
+--INNER Join WideWorldImporters.Sales.OrderLines ol
+--ON o.OrderID = ol.OrderID
+--INNER join WideWorldImporters.Warehouse.StockItems s
+--ON ol.StockItemID=s.StockItemID
+--GROUP BY o.OrderID
+--Order By o.OrderID
