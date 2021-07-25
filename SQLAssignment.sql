@@ -265,3 +265,49 @@ FROM WideWorldImporters.Sales.Invoices ;
 --ON ol.StockItemID=s.StockItemID
 --GROUP BY o.OrderID
 --Order By o.OrderID
+
+/* Q21 */
+USE ods
+GO
+
+--Creating Table
+--CREATE TABLE Orders(
+--    OrderID Int NOT NULL,
+--    OrderDate Date,
+--    OrderTotal decimal(18,2),
+--    CustomerID Int,
+--	PRIMARY KEY (OrderID),
+--);
+
+
+CREATE Procedure TotalOrderDate @Date Date
+AS
+Begin TRY 
+	Begin Transaction;
+		INSERT INTO Orders(OrderId,OrderDate,OrderTotal,CustomerID)
+		SELECT o.OrderID,o.OrderDate, SUM(ol.Quantity*ol.UnitPrice) AS TotalOrder,o.CustomerID 
+		FROM WideWorldImporters.Sales.Orders o
+		INNER Join WideWorldImporters.Sales.OrderLines ol
+		On  o.OrderID=ol.OrderID
+		Group By o.OrderID,o.OrderDate,o.CustomerID 
+		Having o.OrderDate = @Date
+		Commit Transaction;
+End Try
+Begin Catch
+	rollback transaction
+End Catch
+
+--INSERT INTO Orders(OrderId,OrderDate,OrderTotal,CustomerID)
+--	SELECT o.OrderID,o.OrderDate, SUM(ol.Quantity*ol.UnitPrice) AS TotalOrder,o.CustomerID 
+--	FROM WideWorldImporters.Sales.Orders o
+--	INNER Join WideWorldImporters.Sales.OrderLines ol
+--	On  o.OrderID=ol.OrderID
+--	Group By o.OrderID,o.OrderDate,o.CustomerID 
+--	Having o.OrderDate = '2013-01-01'
+
+
+--DELETE Orders WHERE OrderDate = '2013-01-01';
+SELECT * FROM Orders;
+
+--EXEC
+EXEC dbo.TotalOrderDate @Date = '2013-01-01';
