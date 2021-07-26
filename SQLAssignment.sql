@@ -324,3 +324,28 @@ into ods.dbo.StockItems
 from WideWorldImporters.Warehouse.StockItems
 
 SELECT * FROM ods.dbo.StockItems
+
+/* Q23 */
+USE ods
+GO
+
+CREATE Procedure TotalOrderDate23 @Date Date
+AS
+Begin TRY 
+	Begin Transaction;
+		delete from ods.dbo.Orders where OrderDate < @Date
+		INSERT INTO Orders(OrderId,OrderDate,OrderTotal,CustomerID)
+		SELECT o.OrderID,o.OrderDate, SUM(ol.Quantity*ol.UnitPrice) AS TotalOrder,o.CustomerID 
+		FROM WideWorldImporters.Sales.Orders o
+		INNER Join WideWorldImporters.Sales.OrderLines ol
+		On  o.OrderID=ol.OrderID
+		Group By o.OrderID,o.OrderDate,o.CustomerID 
+		Having o.OrderDate >= @Date and o.OrderDate <= DATEADD(day,7, @Date) 
+		Commit Transaction;
+End Try
+Begin Catch
+	rollback transaction
+End Catch
+
+EXEC dbo.TotalOrderDate23 @Date = '2016-03-01';
+SELECT * FROM ods.dbo.Orders;
