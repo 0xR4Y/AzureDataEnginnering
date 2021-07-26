@@ -311,3 +311,16 @@ SELECT * FROM Orders;
 
 --EXEC
 EXEC dbo.TotalOrderDate @Date = '2013-01-01';
+
+/* Q22*/
+
+select StockItemID, StockItemName, SupplierID, ColorID, UnitPackageID, OuterPackageID, Brand, 
+Size, LeadTimeDays, QuantityPerOuter, IsChillerStock, Barcode, TaxRate, UnitPrice, 
+RecommendedRetailPrice, TypicalWeightPerUnit, MarketingComments, InternalComments, 
+JSON_VALUE(CustomFields,'$.CountryOfManufacture') CountryOfManufacture,
+JSON_VALUE(CustomFields,'$.Range') 'Range',
+datediff(DAYOFYEAR, ValidFrom, ValidTo) Shelflife
+into ods.dbo.StockItems
+from WideWorldImporters.Warehouse.StockItems
+
+SELECT * FROM ods.dbo.StockItems
