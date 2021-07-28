@@ -1,9 +1,16 @@
+
 #Ramin Roufeh
 import csv
 
-def remove_duplicates(filename: str):
-    result = []
-    duplicates = set()
+filenames = ['people_1.txt', 'people_2.txt']
+
+# result set for each file
+result = []
+
+finalresult = []
+duplicates = set()
+
+for filename in filenames:
     with open('data/' + filename) as f:
         contents = [line.strip() for line in f]
         for c in contents:
@@ -18,22 +25,10 @@ def remove_duplicates(filename: str):
                 duplicates.add(total)
                 result.append([fn, ln, em, ph, ad])
         print(f'{len(contents) - len(duplicates)} duplicates founded for {filename}')
-        return result
+        finalresult += result
 
-
-if __name__ == '__main__':
-    # putting filename inside list
-    filenames = ['people_1.txt', 'people_2.txt']
-
-    # empty list to enter our result
-    results = []
-
-    # for loop going thrugh each file
-    for f in filenames:
-        # passing eachfile to remove_duplicate() function
-        results += remove_duplicates(f)
-    # open csv file
-    with open('data/results.csv', 'w+') as c:
-        cw = csv.writer(c, delimiter=',')
-        # write result into results
-        cw.writerows(results)
+# open csv file and write final result to it
+with open('data/results.csv', 'w+') as c:
+    cw = csv.writer(c, delimiter=',')
+    # write final result into results
+    cw.writerows(finalresult)
