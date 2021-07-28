@@ -1,11 +1,10 @@
 #Ramin Roufeh
-
 import csv
 
 def remove_duplicates(filename: str):
     result = []
     duplicates = set()
-    with open('people/' + filename) as f:
+    with open('data/' + filename) as f:
         contents = [line.strip() for line in f]
         for c in contents:
             info = c.split('\t')
@@ -18,7 +17,7 @@ def remove_duplicates(filename: str):
             if total not in duplicates:
                 duplicates.add(total)
                 result.append([fn, ln, em, ph, ad])
-        print(f'found: {len(contents) - len(duplicates)} duplicates for {filename}')
+        print(f'{len(contents) - len(duplicates)} duplicates founded for {filename}')
         return result
 
 
@@ -34,7 +33,7 @@ if __name__ == '__main__':
         # passing eachfile to remove_duplicate() function
         results += remove_duplicates(f)
     # open csv file
-    with open('results.csv', 'w+') as c:
+    with open('data/results.csv', 'w+') as c:
         cw = csv.writer(c, delimiter=',')
         # write result into results
         cw.writerows(results)
